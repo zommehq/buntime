@@ -63,7 +63,7 @@ export function App() {
       <footer className="app__info">
         <p>Double-click to edit a todo. v{pkg.version}</p>
         <p>
-          Written by <a href="https://djalmajr.dev">Djalma Jr.</a>
+          Written by <a href="https://djalmajr.dev">Djalma Jr!!</a>
         </p>
       </footer>
     </div>
