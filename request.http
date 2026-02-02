@@ -1,0 +1,110 @@
+### Variables
+@baseUrl = http://localhost:8000
+@token = eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ3eUY4MUhBTkgzTElnVHF1VElJSW9vQTVMQjJyaVVUcjRaQzRSTGxJclMwIn0.eyJleHAiOjE3NzAwMDI5MTAsImlhdCI6MTc2OTk3NDExMCwiYXV0aF90aW1lIjoxNzY5OTc0MTA5LCJqdGkiOiJvbnJ0YWM6NzdhOTkxY2EtYTUwNS03MTk5LWYzNTEtZjFjMDMyZGE3OGNmIiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay1veHlnZW4uY2xvdWQ0Yml6LmNvbS9hdXRoL3JlYWxtcy9ydW4yYml6Iiwic3ViIjoiMGVlYmI2ZDUtNTYwZi00YjcxLTllYTUtMTE2ODJlZTcxYTBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZnJvbnQtbWFuYWdlciIsInNpZCI6IjJlYTQxNTU3LWRiZmYtNDk4OC05YTQ0LTAxNTJhYjcwMjEyMyIsImFsbG93ZWQtb3JpZ2lucyI6WyIqIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJST0xFX0RNX1VTRVIiLCJzbWFydF9wb3J0YWwiLCJkZWZhdWx0LXJvbGVzLXJ1bjJiaXoiLCJbU3VwcG9ydF0iLCJBZG1pbmlzdHJhZG9yIiwia2JuX3JkbSIsImFwcDpmcm9udC1tYW5hZ2VyOnRvcC1iYXIiLCJoeXBfdXNlcl9tZW51IiwiW1F1YWxpdHldIiwiaHlwX3JvbGVfbWVudSIsImh5cGVyX2FkbWluIiwia2JuX3VzZXIiLCJbQWRtaW5pc3RyYXRvcl0iLCJBZG1pbmlzdHJhZG9yKyIsIm9mZmxpbmVfYWNjZXNzIiwiaHlwX2FkbWluIiwia2JuX2FkbWluIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImh5cGVyX2NsaWVudCI6ImYwNzI1MmE1LWQ4MmYtNGY1YS04NTVlLWY2ZWE1N2YyMmNhYyIsIm5hbWUiOiJEamFsbWEgTmFzY2ltZW50byIsInJkbSI6InRydWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJkamFsbWEuanVuaW9yIiwiZ2l2ZW5fbmFtZSI6IkRqYWxtYSIsImZhbWlseV9uYW1lIjoiTmFzY2ltZW50byIsImVtYWlsIjoiZGphbG1hLmp1bmlvckBydW4yYml6LmNvbSIsImh5cGVyX2NsdXN0ZXJfc3BhY2UiOiI1ODQ5M2NhZS0wY2M0LTQzMjctODU1My1lYWM1YTkwNzFhODYifQ.mHtgTL3OsMkXwAoCrN5dNBthpdQKUeFfdf5HufYV1iDU_suF5rhfzB81PVJ0Iq835Z2BUHvN_bFudSit3GCtPdkk5IP3V-OYbzJUuowDG6BuWHuO2uib0EUcYooV4-L8LMsG6OLmKAtN1F7-6eIm-htrZJ1nBL0RLm0pHUeFCp5_c35uAs1EH_qdIQCHXfl6XKViDRFvmN2LxkX1UU95BDXM0lXFTJhoBF7fHALmXPtYdj6F861TM62UkptG8Dm6q5yonBgwFLoy-jFw4_5LCrm88kaoAV8GiKS3razUHGCySN7_oZj1uPmrm0Wkuir9MFuH1vZ7OQI96M3OWq4Wdw
+
+### ============================================================================
+### Proxy Rules
+### ============================================================================
+
+### List all proxy rules
+GET {{baseUrl}}/redirects/api/rules
+Authorization: Bearer {{token}}
+
+### ----------------------------------------------------------------------------
+### Create Proxy Rules for demo-oxygen.cloud4biz.com
+### ----------------------------------------------------------------------------
+
+### Create API Proxy Rule (with public routes for config endpoints)
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Front Manager API",
+  "pattern": "^/api(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/api$1",
+  "changeOrigin": true,
+  "publicRoutes": {
+    "GET": ["/api/config/**"]
+  }
+}
+
+### Create Gestor de Licenças API Proxy Rule
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Gestor de Licenças API",
+  "pattern": "^/gestor-licencas-api(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/gestor-licencas-api$1",
+  "changeOrigin": true
+}
+
+### Create Gestão de Pessoas API Proxy Rule
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Gestão de Pessoas API",
+  "pattern": "^/gestao-pessoas-api(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/gestao-pessoas-api$1",
+  "changeOrigin": true
+}
+
+### Create A Proxy Rule
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Edge Runtime",
+  "pattern": "^/a(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/a$1",
+  "changeOrigin": true,
+  "publicRoutes": {
+    "GET": ["/a/translate-api/**"]
+  }
+}
+
+### ----------------------------------------------------------------------------
+### Update existing rule with publicRoutes
+### ----------------------------------------------------------------------------
+
+### Update API Proxy Rule to add publicRoutes
+# PUT {{baseUrl}}/redirects/api/rules/{rule-id}
+# Content-Type: application/json
+# Authorization: Bearer {{token}}
+#
+# {
+#   "publicRoutes": {
+#     "GET": ["/api/config/**", "/api/health"]
+#   }
+# }
+
+### ----------------------------------------------------------------------------
+### Test endpoints
+### ----------------------------------------------------------------------------
+
+### Test Front Manager API
+GET {{baseUrl}}/api/config/keycloak
+Authorization: Bearer {{token}}
+
+### Test Gestor de Licenças API
+GET {{baseUrl}}/gestor-licencas-api/health
+Authorization: Bearer {{token}}
+
+### Test Gestão de Pessoas API
+GET {{baseUrl}}/gestao-pessoas-api/health
+Authorization: Bearer {{token}}
+
+### Test Front Manager API config (should work without auth after publicRoutes configured)
+GET {{baseUrl}}/api/config/keycloak
+
+### Test translate API (should work without auth after publicRoutes configured)
+GET {{baseUrl}}/a/translate-api/resources/json?language=pt-BR&name=menu&appName=@hyper/kanban&version=1.0.0.0
