@@ -5,12 +5,19 @@
 replicaCount: 1
 
 image:
-  repository: registry.gitlab.home/zomme/buntime
+  repository: ghcr.io/zommehq/buntime
   tag: latest
   pullPolicy: Always
 
-imagePullSecrets:
-  - name: gitlab-registry
+# Test: GitLab local registry
+# image:
+#   repository: registry.gitlab.home/zomme/buntime
+#   tag: latest
+#   pullPolicy: Always
+# imagePullSecrets:
+#   - name: gitlab-registry
+
+imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
