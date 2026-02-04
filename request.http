@@ -56,7 +56,33 @@ Authorization: Bearer {{token}}
   "changeOrigin": true
 }
 
-### Create A Proxy Rule
+### Create Kanban Frontend Proxy Rule
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Kanban Frontend",
+  "pattern": "^/hyper-kanban-frontend(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/hyper-kanban-frontend$1",
+  "changeOrigin": true
+}
+
+### Create Hyper Kanban API Proxy Rule
+POST {{baseUrl}}/redirects/api/rules
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Hyper Kanban API",
+  "pattern": "^/hyper-kanban-api(/.*)?$",
+  "target": "https://demo-oxygen.cloud4biz.com",
+  "rewrite": "/hyper-kanban-api$1",
+  "changeOrigin": true
+}
+
+### Create Edge Runtime Proxy Rule
 POST {{baseUrl}}/redirects/api/rules
 Content-Type: application/json
 Authorization: Bearer {{token}}
