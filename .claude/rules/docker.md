@@ -54,7 +54,7 @@ volumes:
   - ${RUNTIME_WORKER_DIRS:-./tmp/apps}:/data/apps
   - ${RUNTIME_PLUGIN_DIRS:-./tmp/plugins}:/data/plugins
   # App shell
-  - ${GATEWAY_APP_SHELL:-/tmp/apps/front-manager}:/data/apps/front-manager
+  - ${GATEWAY_SHELL_DIR:-/tmp/apps/front-manager}:/data/apps/front-manager
 ```
 
 **Environment:**
@@ -68,7 +68,8 @@ environment:
   RUNTIME_WORKER_DIRS: /data/.apps:/data/apps
   RUNTIME_POOL_SIZE: 10
   DATABASE_LIBSQL_URL: http://libsql:8080
-  GATEWAY_APP_SHELL: /data/apps/front-manager
+  GATEWAY_SHELL_DIR: /data/apps/front-manager
+  GATEWAY_SHELL_EXCLUDES: ${GATEWAY_SHELL_EXCLUDES:-cpanel}
 ```
 
 ### libsql
@@ -94,7 +95,8 @@ environment:
 # .env file (loaded by docker-compose)
 RUNTIME_PLUGIN_DIRS=/path/to/external/plugins
 RUNTIME_WORKER_DIRS=/path/to/external/apps
-GATEWAY_APP_SHELL=/path/to/front-manager
+GATEWAY_SHELL_DIR=/path/to/front-manager
+GATEWAY_SHELL_EXCLUDES=cpanel
 ```
 
 ## Common Commands
