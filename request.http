@@ -63,9 +63,9 @@ Authorization: Bearer {{token}}
 
 {
   "name": "Kanban Frontend",
-  "pattern": "^/hyper-kanban-frontend(/.*)?$",
+  "pattern": "^/hyper-kanban-front(/.*)?$",
   "target": "https://demo-oxygen.cloud4biz.com",
-  "rewrite": "/hyper-kanban-frontend$1",
+  "rewrite": "/hyper-kanban-front$1",
   "changeOrigin": true
 }
 
