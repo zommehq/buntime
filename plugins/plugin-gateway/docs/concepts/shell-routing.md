@@ -262,8 +262,8 @@ The shell worker detects and injects `<base>`:
 
 ```
 front-manager/
-├── manifest.yaml
-├── buntime.yaml
+├── manifest.yaml        # Worker config + metadata
+├── .env                 # Optional: environment variables
 ├── dist/
 │   ├── index.html       # Shell HTML
 │   ├── assets/
@@ -278,10 +278,6 @@ front-manager/
 name: "@buntime/front-manager"
 base: "/"
 visibility: public
-```
-
-**buntime.yaml:**
-```yaml
 entrypoint: dist/index.html
 ttl: 300
 publicRoutes:

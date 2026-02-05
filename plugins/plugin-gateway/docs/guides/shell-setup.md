@@ -38,8 +38,8 @@ cd /data/apps/front-manager
 
 ```
 front-manager/
-├── manifest.yaml
-├── buntime.yaml
+├── manifest.yaml        # Worker config + metadata
+├── .env                 # Optional: environment variables
 ├── package.json
 ├── src/
 │   ├── App.tsx          # Main component
@@ -57,11 +57,6 @@ front-manager/
 name: "@buntime/front-manager"
 base: "/"
 visibility: public
-```
-
-### buntime.yaml
-
-```yaml
 entrypoint: dist/index.html
 ttl: 300
 idleTimeout: 60
