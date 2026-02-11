@@ -2,6 +2,9 @@ name: "@buntime/plugin-deployments"
 base: "/deployments"
 enabled: true
 
+# Allow larger uploads for deployment files (100MB max)
+maxBodySize: "100mb"
+
 entrypoint: dist/index.js
 pluginEntry: dist/plugin.js
 

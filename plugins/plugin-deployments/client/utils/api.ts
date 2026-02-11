@@ -55,6 +55,31 @@ export async function uploadFiles(
       method: "POST",
     });
 
+    // Handle 413 (Payload Too Large) - may not be JSON
+    if (res.status === 413) {
+      return {
+        error: "File size exceeds the maximum allowed (100MB). Try uploading smaller files or in batches.",
+        success: false,
+      };
+    }
+
+    // For other non-2xx responses, try to parse error
+    if (!res.ok) {
+      const text = await res.text();
+      try {
+        const json = JSON.parse(text);
+        return {
+          error: json.error || `Upload failed with status ${res.status}`,
+          success: false,
+        };
+      } catch {
+        return {
+          error: `Upload failed: ${res.statusText || res.status}`,
+          success: false,
+        };
+      }
+    }
+
     const json = await res.json();
     return json;
   } catch (err) {

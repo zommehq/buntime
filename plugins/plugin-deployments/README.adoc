@@ -10,6 +10,30 @@ Plugin para gerenciamento do ciclo de vida de aplicações worker (upload, lista
 
 == Configuração
 
+=== Limite de Upload
+
+O plugin suporta uploads de até 100MB por padrão. Este limite é configurado em dois lugares:
+
+1. **Aplicação (manifest.yaml)**:
++
+[source,yaml]
+----
+maxBodySize: "100mb"
+----
+
+2. **Ingress/Gateway** (para deployments em Kubernetes):
++
+[source,yaml]
+----
+# charts/values.yaml
+ingress:
+  maxBodySize: "100m"  # Máximo permitido pelo Nginx Ingress
+----
+
+NOTE: Se você receber erro `413 Payload Too Large` ao fazer upload, verifique ambas as configurações acima. O limite mais restritivo será aplicado.
+
+=== Configuração Básica
+
 [source,jsonc]
 ----
 // plugins/plugin-deployments/manifest.jsonc

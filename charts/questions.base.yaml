@@ -98,6 +98,13 @@ questions:
     default: false
     group: "Runtime"
 
+  - variable: ingress.maxBodySize
+    label: "Max Upload Size"
+    description: "Maximum request body size for file uploads (e.g., 100m, 1g). Use 0 to disable limit."
+    type: string
+    default: "100m"
+    group: "Runtime"
+
   # ==================== STORAGE ====================
   - variable: persistence.plugins.size
     label: "Plugins Volume Size"
