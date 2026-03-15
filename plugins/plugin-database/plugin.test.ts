@@ -36,9 +36,12 @@ describe("databasePlugin", () => {
     });
 
     it("should export adapter classes", async () => {
-      const { LibSqlAdapter, BunSqlAdapter, DatabaseServiceImpl } = await import("./plugin");
+      const { LibSqlAdapter, BunSqlAdapter, DatabaseServiceImpl, PgliteAdapter } = await import(
+        "./plugin"
+      );
       expect(LibSqlAdapter).toBeDefined();
       expect(BunSqlAdapter).toBeDefined();
+      expect(PgliteAdapter).toBeDefined();
       expect(DatabaseServiceImpl).toBeDefined();
     });
 

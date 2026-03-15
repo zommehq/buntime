@@ -15,6 +15,7 @@ import type { DatabaseAdapter, LibSqlAdapterConfig, Statement, TransactionAdapte
 export class LibSqlAdapter implements DatabaseAdapter {
   readonly type = "libsql" as const;
   readonly tenantId: string | null;
+  readonly url: string;
 
   private readonly primaryUrl: string;
   private readonly authToken: string | undefined;
@@ -44,11 +45,12 @@ export class LibSqlAdapter implements DatabaseAdapter {
 
     // Build URL for tenant namespace
     const resolvedPrimaryUrl = tenantId ? this.buildTenantUrl(primaryUrl, tenantId) : primaryUrl;
+    this.url = resolvedPrimaryUrl;
 
     // Primary client (for writes and as fallback for reads)
     this.client = createClient({
       authToken: config.authToken,
-      url: resolvedPrimaryUrl,
+      url: this.url,
     });
 
     // Create replica clients
@@ -71,6 +73,10 @@ export class LibSqlAdapter implements DatabaseAdapter {
    */
   getRawClient(): Client {
     return this.client;
+  }
+
+  getUrl(): string {
+    return this.url;
   }
 
   /**

@@ -14,7 +14,7 @@ O serviço principal registrado no container de injeção de dependência como `
 
 [source,typescript]
 ----
-type AdapterType = "libsql" | "mysql" | "postgres" | "sqlite";
+type AdapterType = "libsql" | "mysql" | "pglite" | "postgres" | "sqlite";
 
 interface DatabaseService {
   /**
@@ -62,7 +62,7 @@ Interface unificada para execução de operações no banco de dados.
 [source,typescript]
 ----
 interface DatabaseAdapter {
-  readonly type: AdapterType; // 'libsql' | 'postgres' | 'mysql' | 'sqlite'
+  readonly type: AdapterType; // 'libsql' | 'pglite' | 'postgres' | 'mysql' | 'sqlite'
   readonly tenantId: string | null;
 
   /**

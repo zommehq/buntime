@@ -2,6 +2,7 @@ import type { PluginLogger } from "@buntime/shared/types";
 import QuickLRU from "quick-lru";
 import { BunSqlAdapter } from "./adapters/bun-sql";
 import { LibSqlAdapter } from "./adapters/libsql";
+import { PgliteAdapter } from "./adapters/pglite";
 import type {
   AdapterConfig,
   AdapterType,
@@ -17,6 +18,8 @@ function createAdapter(config: AdapterConfig): DatabaseAdapter {
   switch (config.type) {
     case "libsql":
       return new LibSqlAdapter(config);
+    case "pglite":
+      return new PgliteAdapter(config);
     case "postgres":
     case "mysql":
     case "sqlite":

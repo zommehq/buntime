@@ -1,0 +1,9 @@
+= Plugin Migrations
+:toc:
+:toc-title: Sumário
+
+include::docs/concepts/overview.adoc[leveloffset=+1]
+
+include::docs/guides/configuration.adoc[leveloffset=+1]
+
+include::docs/guides/examples.adoc[leveloffset=+1]

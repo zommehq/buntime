@@ -4,7 +4,7 @@ import type { Client as LibSqlClient } from "@libsql/client/http";
 /**
  * Supported database adapter types
  */
-export type AdapterType = "libsql" | "mysql" | "postgres" | "sqlite";
+export type AdapterType = "libsql" | "mysql" | "pglite" | "postgres" | "sqlite";
 
 /**
  * SQL statement for batch/transaction operations
@@ -64,6 +64,7 @@ export interface DatabaseAdapter {
    * - postgres: creates schema
    * - mysql: creates database
    * - sqlite: creates file
+   * - pglite: creates a tenant data directory
    */
   createTenant(tenantId: string): Promise<void>;
 
@@ -87,6 +88,12 @@ export interface DatabaseAdapter {
    * Use this when you need to pass the client to external libraries
    */
   getRawClient(): LibSqlClient | unknown;
+
+  /**
+   * Get adapter connection URL/path when available.
+   * Used by migration tools that need a direct connection string.
+   */
+  getUrl?(): string;
 }
 
 /**
@@ -101,6 +108,21 @@ export interface BunSqlAdapterConfig {
   logger?: PluginLogger;
   type: "mysql" | "postgres" | "sqlite";
   /** Database connection URL (optional for sqlite with baseDir) */
+  url?: string;
+}
+
+/**
+ * Configuration for PGlite adapter
+ */
+export interface PgliteAdapterConfig {
+  /** Base directory for PGlite tenant folders */
+  baseDir?: string;
+  /** Mark as default adapter (only one allowed) */
+  default?: boolean;
+  /** Logger instance */
+  logger?: PluginLogger;
+  type: "pglite";
+  /** Storage URL/path (optional when baseDir is provided) */
   url?: string;
 }
 
@@ -130,7 +152,7 @@ export interface LibSqlAdapterConfig {
 /**
  * Union type for all adapter configurations
  */
-export type AdapterConfig = BunSqlAdapterConfig | LibSqlAdapterConfig;
+export type AdapterConfig = BunSqlAdapterConfig | LibSqlAdapterConfig | PgliteAdapterConfig;
 
 /**
  * Plugin-database configuration

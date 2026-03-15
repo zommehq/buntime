@@ -1,3 +1,6 @@
 import { createPluginBuilder } from "@buntime/shared/build";
 
-createPluginBuilder({ client: true, name: "plugin-database" }).run();
+createPluginBuilder({
+  client: true,
+  external: ["@electric-sql/pglite"],
+}).run();

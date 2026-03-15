@@ -1,0 +1,25 @@
+.DS_Store
+.env*
+!.env.example
+
+.idea/
+.tanstack/
+.vite/
+
+coverage/
+dist/
+node_modules/
+pg_data/
+tmp/
+
+# Agents
+.claude/*
+!.claude/commands/
+!.claude/hooks/
+!.claude/rules/
+!.claude/settings.json
+.claude/hooks/**/.bypass
+.claude/hooks/**/store.db
+.opencode/*
+!.opencode/commands/
+!.opencode/plugins/

@@ -28,6 +28,7 @@ menus:
 # Supported adapter types:
 #   - libsql   : LibSQL/Turso (recommended for production)
 #   - sqlite   : SQLite (great for local development, no dependencies)
+#   - pglite   : Embedded Postgres (filesystem-based, local/dev friendly)
 #   - postgres : PostgreSQL
 #   - mysql    : MySQL/MariaDB
 #
@@ -87,6 +88,11 @@ adapters:
   #   url: sqlite://:memory:
   #   default: true
 
+  # PGlite adapter (embedded PostgreSQL)
+  # Good for local development when you need PostgreSQL compatibility
+  - type: pglite
+    baseDir: ./.cache/pglite/
+
   # ---------------------------------------------------------------------------
   # PostgreSQL Adapter
   # ---------------------------------------------------------------------------
@@ -126,6 +132,7 @@ adapters:
 #   2. Each adapter isolates data differently:
 #      - libsql: namespaces (subdomain routing)
 #      - sqlite: separate .db files
+#      - pglite: separate data directories
 #      - postgres: schemas
 #      - mysql: databases
 #   3. If autoCreate=true, tenant is created on first request

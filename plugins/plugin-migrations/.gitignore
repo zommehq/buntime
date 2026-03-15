@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.db
+*.sqlite
+.cache/
+.DS_Store
+
+# Generated tarballs
+*.tar.gz
+*.tgz
+
+# Test databases
+test*.db
+*.test.db

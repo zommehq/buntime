@@ -776,7 +776,7 @@ interface DatabaseAdapter {
 ### AdapterType
 
 ```typescript
-type AdapterType = "libsql" | "mysql" | "postgres" | "sqlite";
+type AdapterType = "libsql" | "mysql" | "pglite" | "postgres" | "sqlite";
 ```
 
 ### Statement

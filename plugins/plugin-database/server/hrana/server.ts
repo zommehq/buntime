@@ -8,7 +8,7 @@
 
 import type { PluginLogger } from "@buntime/shared/types";
 import { splitList } from "@buntime/shared/utils/string";
-import type { DatabaseAdapter, DatabaseService } from "../types";
+import type { AdapterType, DatabaseAdapter, DatabaseService } from "../types";
 import {
   fromHranaValue,
   type HranaBatchCondition,
@@ -222,7 +222,7 @@ export class HranaServer {
    * Get database adapter based on type and namespace
    */
   private async getAdapter(adapterType?: string, namespace?: string): Promise<DatabaseAdapter> {
-    const type = adapterType as "libsql" | "mysql" | "postgres" | "sqlite" | undefined;
+    const type = adapterType as AdapterType | undefined;
 
     if (namespace) {
       return this.service.getAdapter(type, namespace);

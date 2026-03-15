@@ -1,0 +1,826 @@
+{
+  "id": "d02223d9-11a0-4f1a-9d16-c9e803f06ca8",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "parameters.client_category": {
+      "name": "client_category",
+      "schema": "parameters",
+      "columns": {
+        "client_category_id": {
+          "name": "client_category_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'A'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "client_category_name_unique": {
+          "name": "client_category_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.client": {
+      "name": "client",
+      "schema": "parameters",
+      "columns": {
+        "client_id": {
+          "name": "client_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_uuid": {
+          "name": "client_uuid",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taxid": {
+          "name": "taxid",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'A'"
+        },
+        "client_category_id": {
+          "name": "client_category_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(150)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "complement": {
+          "name": "complement",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "zipcode": {
+          "name": "zipcode",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stateprovince": {
+          "name": "stateprovince",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state_id": {
+          "name": "state_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "ix_client_category": {
+          "name": "ix_client_category",
+          "columns": [
+            {
+              "expression": "client_category_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ix_client_state": {
+          "name": "ix_client_state",
+          "columns": [
+            {
+              "expression": "state_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "fk_client_clientcategory": {
+          "name": "fk_client_clientcategory",
+          "tableFrom": "client",
+          "tableTo": "client_category",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "client_category_id"
+          ],
+          "columnsTo": [
+            "client_category_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "fk_client_state": {
+          "name": "fk_client_state",
+          "tableFrom": "client",
+          "tableTo": "state",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "state_id"
+          ],
+          "columnsTo": [
+            "state_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "client_client_uuid_unique": {
+          "name": "client_client_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "client_uuid"
+          ]
+        },
+        "client_name_unique": {
+          "name": "client_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.cluster_space_client": {
+      "name": "cluster_space_client",
+      "schema": "parameters",
+      "columns": {
+        "cluster_space_client_id": {
+          "name": "cluster_space_client_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cluster_space_uuid": {
+          "name": "cluster_space_uuid",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "main_url_dns": {
+          "name": "main_url_dns",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type_url_login": {
+          "name": "type_url_login",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url_login": {
+          "name": "url_login",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url_redirect_post_login": {
+          "name": "url_redirect_post_login",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "post_login_script": {
+          "name": "post_login_script",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'A'"
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "varchar(15)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_language": {
+          "name": "default_language",
+          "type": "char(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_formatdate": {
+          "name": "default_formatdate",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_formattime": {
+          "name": "default_formattime",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_formatdatetime": {
+          "name": "default_formatdatetime",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "default_formatmoney": {
+          "name": "default_formatmoney",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "messaging_engine": {
+          "name": "messaging_engine",
+          "type": "char(5)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "messaging_config": {
+          "name": "messaging_config",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "queue_data_exchange": {
+          "name": "queue_data_exchange",
+          "type": "varchar(120)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "realm": {
+          "name": "realm",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "monitor_ingowner": {
+          "name": "monitor_ingowner",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "home_url": {
+          "name": "home_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_place_url": {
+          "name": "work_place_url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logo": {
+          "name": "logo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logo_reports": {
+          "name": "logo_reports",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cluster_id": {
+          "name": "cluster_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alias": {
+          "name": "alias",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "custom_url_login": {
+          "name": "custom_url_login",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "ix_clusterspace_cluster": {
+          "name": "ix_clusterspace_cluster",
+          "columns": [
+            {
+              "expression": "cluster_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "ix_clusterspace_client": {
+          "name": "ix_clusterspace_client",
+          "columns": [
+            {
+              "expression": "client_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "fk_clusterspace_client": {
+          "name": "fk_clusterspace_client",
+          "tableFrom": "cluster_space_client",
+          "tableTo": "client",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "client_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "fk_clusterspace_cluster": {
+          "name": "fk_clusterspace_cluster",
+          "tableFrom": "cluster_space_client",
+          "tableTo": "cluster",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "cluster_id"
+          ],
+          "columnsTo": [
+            "cluster_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cluster_space_client_cluster_space_uuid_unique": {
+          "name": "cluster_space_client_cluster_space_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cluster_space_uuid"
+          ]
+        },
+        "cluster_space_client_main_url_dns_unique": {
+          "name": "cluster_space_client_main_url_dns_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "main_url_dns"
+          ]
+        },
+        "cluster_space_client_alias_unique": {
+          "name": "cluster_space_client_alias_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "alias"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.cluster_space_parameter": {
+      "name": "cluster_space_parameter",
+      "schema": "parameters",
+      "columns": {
+        "cluster_space_parameter_id": {
+          "name": "cluster_space_parameter_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "cluster_space_parameter_parent_id": {
+          "name": "cluster_space_parameter_parent_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cluster_space_client_id": {
+          "name": "cluster_space_client_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parameter_key": {
+          "name": "parameter_key",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parameter_value": {
+          "name": "parameter_value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parameter_type": {
+          "name": "parameter_type",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "fk_cluster_space_parameter_parent": {
+          "name": "fk_cluster_space_parameter_parent",
+          "tableFrom": "cluster_space_parameter",
+          "tableTo": "cluster_space_parameter",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "cluster_space_parameter_parent_id"
+          ],
+          "columnsTo": [
+            "cluster_space_parameter_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "fk_cluster_space_parameter_cluster_space_client": {
+          "name": "fk_cluster_space_parameter_cluster_space_client",
+          "tableFrom": "cluster_space_parameter",
+          "tableTo": "cluster_space_client",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "cluster_space_client_id"
+          ],
+          "columnsTo": [
+            "cluster_space_client_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cluster_space_parameter_cluster_space_client_id_cluster_spa_key": {
+          "name": "cluster_space_parameter_cluster_space_client_id_cluster_spa_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cluster_space_client_id",
+            "cluster_space_parameter_parent_id",
+            "parameter_key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.cluster": {
+      "name": "cluster",
+      "schema": "parameters",
+      "columns": {
+        "cluster_id": {
+          "name": "cluster_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'A'"
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "ix_cluster_region": {
+          "name": "ix_cluster_region",
+          "columns": [
+            {
+              "expression": "region_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "fk_cluster_region": {
+          "name": "fk_cluster_region",
+          "tableFrom": "cluster",
+          "tableTo": "region",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "region_id"
+          ],
+          "columnsTo": [
+            "region_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "cluster_name_unique": {
+          "name": "cluster_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.country": {
+      "name": "country",
+      "schema": "parameters",
+      "columns": {
+        "country_id": {
+          "name": "country_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "country_name_unique": {
+          "name": "country_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.region": {
+      "name": "region",
+      "schema": "parameters",
+      "columns": {
+        "region_id": {
+          "name": "region_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'A'"
+        },
+        "state_id": {
+          "name": "state_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "ix_region_state": {
+          "name": "ix_region_state",
+          "columns": [
+            {
+              "expression": "state_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "fk_region_state": {
+          "name": "fk_region_state",
+          "tableFrom": "region",
+          "tableTo": "state",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "state_id"
+          ],
+          "columnsTo": [
+            "state_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "region_name_unique": {
+          "name": "region_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "parameters.state": {
+      "name": "state",
+      "schema": "parameters",
+      "columns": {
+        "state_id": {
+          "name": "state_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(80)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country_id": {
+          "name": "country_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "fk_state_country": {
+          "name": "fk_state_country",
+          "tableFrom": "state",
+          "tableTo": "country",
+          "schemaTo": "parameters",
+          "columnsFrom": [
+            "country_id"
+          ],
+          "columnsTo": [
+            "country_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "uq_state_country": {
+          "name": "uq_state_country",
+          "nullsNotDistinct": false,
+          "columns": [
+            "country_id",
+            "name"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

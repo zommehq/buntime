@@ -1,0 +1,26 @@
+{
+  "name": "@buntime/plugin-migrations",
+  "version": "0.1.0",
+  "license": "SEE LICENSE IN LICENSE",
+  "type": "module",
+  "scripts": {
+    "build": "NODE_ENV=production bun scripts/build.ts",
+    "dev": "bun scripts/build.ts --watch",
+    "lint": "bun run lint:format && bun run lint:types",
+    "lint:format": "bun biome check --write",
+    "lint:types": "bun tsc --noEmit",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "dependencies": {
+    "@buntime/shared": "workspace:*",
+    "@electric-sql/pglite": "^0.3.14",
+    "@libsql/client": "^0.17.0",
+    "drizzle-orm": "^0.45.1"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "hono": "^4.12.3",
+    "typescript": "^5.9.3"
+  }
+}

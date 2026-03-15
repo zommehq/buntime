@@ -15,6 +15,7 @@ import type { BunSqlAdapterConfig, DatabaseAdapter, Statement, TransactionAdapte
 export class BunSqlAdapter implements DatabaseAdapter {
   readonly type: "mysql" | "postgres" | "sqlite";
   readonly tenantId: string | null;
+  readonly url: string;
 
   private readonly config: BunSqlAdapterConfig;
   private readonly sql: SQL;
@@ -39,7 +40,8 @@ export class BunSqlAdapter implements DatabaseAdapter {
       throw new Error(`URL is required for ${config.type} adapter`);
     }
 
-    this.sql = new SQL(url);
+    this.url = url;
+    this.sql = new SQL(this.url);
   }
 
   /**
@@ -47,6 +49,10 @@ export class BunSqlAdapter implements DatabaseAdapter {
    */
   getRawClient(): SQL {
     return this.sql;
+  }
+
+  getUrl(): string {
+    return this.url;
   }
 
   /**

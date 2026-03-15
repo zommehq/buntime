@@ -91,6 +91,16 @@ function formatCellValue(value: unknown): string {
   return String(value);
 }
 
+function mapAdapterTypeToDatabaseType(adapterType: string): DatabaseType {
+  if (adapterType === "postgres" || adapterType === "pglite") {
+    return "postgresql";
+  }
+  if (adapterType === "mysql") {
+    return "mysql";
+  }
+  return "sqlite";
+}
+
 // Cell Content wrapper that renders the appropriate cell type
 function CellContent({
   cellVariant,
@@ -465,7 +475,7 @@ export function DatabaseStudio() {
   const [totalCount, setTotalCount] = useState(0);
 
   // Database type (for cell variant selection)
-  const [databaseType, _setDatabaseType] = useState<DatabaseType>("sqlite");
+  const [databaseType, setDatabaseType] = useState<DatabaseType>("sqlite");
 
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -536,6 +546,7 @@ export function DatabaseStudio() {
       ]);
 
       setColumns(schemaResult.columns);
+      setDatabaseType(mapAdapterTypeToDatabaseType(schemaResult.type));
       setRows(rowsResult.rows);
       setTotalCount(rowsResult.total);
       setQueryTime(Math.round(performance.now() - startTime));

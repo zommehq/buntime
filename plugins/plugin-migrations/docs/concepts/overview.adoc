@@ -1,0 +1,270 @@
+= Visão Geral
+:toc:
+:toc-title: Sumário
+
+Plugin de migrações de banco de dados para o Buntime. Descobre automaticamente apps que declaram uma seção `database` no `manifest.yaml` e executa migrações Drizzle ORM na inicialização.
+
+== Funcionalidades
+
+* **Descoberta automática**: Escaneia `workerDirs` e encontra apps com configuração `database`
+* **Dois providers**: `plugin-database` (gerenciado pelo Buntime) ou `resource-tenant` (conexão via Front Manager/K8s)
+* **Múltiplos adapters**: PostgreSQL (`Bun.sql`), SQLite (`bun:sqlite`), LibSQL
+* **Seeds opcionais**: Scripts TypeScript/JavaScript executados após migrações
+* **Multi-tenancy**: Suporte a migrações isoladas por tenant
+* **Tratamento seguro de erros**: Falhas não derrubam o runtime
+
+**Modo**: Persistente (lógica em `plugin.ts`, sem worker/entrypoint).
+
+== Arquitetura
+
+[source]
+----
+Startup
+  │
+  ▼
+onInit(ctx)
+  │
+  ├─ Obtém plugins opcionais (plugin-database, plugin-resource-tenant)
+  ├─ Escaneia workerDirs em busca de apps com manifest.database
+  │
+  ▼
+Para cada app encontrado:
+  │
+  ├─ provider: "plugin-database"
+  │   └─ Obtém adapter via ctx.getPlugin("@buntime/plugin-database")
+  │   └─ Extrai URL de conexão do adapter
+  │
+  ├─ provider: "resource-tenant"
+  │   └─ Obtém URL via ctx.getPlugin("@buntime/plugin-resource-tenant")
+  │   └─ Usa TENANT_ID do ambiente
+  │
+  ▼
+runMigrations(url, folder, schema, adapterType)
+  │
+  ├─ postgres  → Bun.sql + drizzle-orm/bun-sql
+  ├─ sqlite    → bun:sqlite + drizzle-orm/bun-sqlite
+  └─ libsql    → @libsql/client + drizzle-orm/libsql
+  │
+  ▼
+runSeeds(db, folder) [opcional]
+----
+
+== Modo Persistente
+
+Diferente de plugins como `plugin-deployments` que usam modo serverless (API roda no worker pool), o `plugin-migrations` é **persistente** e executa toda sua lógica no `onInit` durante a inicialização:
+
+* **`plugin.ts`** implementa apenas `onInit` — descobre apps, executa migrações e seeds
+* **Sem worker** — não possui `index.ts` nem entrypoint
+* **Sem rotas** — não possui `routes`, `onRequest` ou `onResponse`
+* **Execução única** — roda apenas na inicialização do runtime
+
+== Componentes Principais
+
+=== 1. Plugin Entry (`plugin.ts`)
+
+Ponto de entrada principal. Executa durante a inicialização do Buntime:
+
+* Obtém referências opcionais para `plugin-database` e `plugin-resource-tenant`
+* Escaneia `workerDirs` para encontrar apps com seção `database` no `manifest.yaml`
+* Executa migrações e seeds para cada app encontrado
+
+**Hooks utilizados:** apenas `onInit`
+
+=== 2. Executor de Migrações (`lib/migrations.ts`)
+
+Executa arquivos de migração SQL usando Drizzle ORM:
+
+* Cria conexão direta ao banco usando o adapter apropriado
+* Executa migrações via `drizzle-orm/*/migrator`
+* Fecha a conexão após conclusão
+
+=== 3. Executor de Seeds (`lib/seeds.ts`)
+
+Executa scripts TypeScript/JavaScript após as migrações:
+
+* Carrega arquivos em ordem alfabética (use prefixos numéricos para controlar a ordem)
+* Cada arquivo exporta uma função default que recebe a instância do banco
+* Erros em seeds individuais não impedem os seeds restantes
+
+=== 4. Tipos (`lib/types.ts`)
+
+Define interfaces compartilhadas:
+
+* `AppDatabaseConfig` — configuração `database` do manifest do app
+* `AppInfo` — informações do app descoberto (nome, diretório, caminhos)
+* `APP_DATABASE_DEFAULTS` — valores padrão da configuração
+
+== Providers
+
+O plugin suporta dois providers mutuamente exclusivos **por app** (não por plugin). Cada app escolhe seu provider no `manifest.yaml`.
+
+=== plugin-database
+
+Usa o serviço de banco gerenciado pelo Buntime (`@buntime/plugin-database`). Indicado para apps que usam a infraestrutura interna do Buntime (LibSQL, SQLite).
+
+[source,yaml]
+----
+database:
+  provider: plugin-database
+  adapterType: libsql
+  migrations: server/migrations
+----
+
+O plugin obtém o adapter via `ctx.getPlugin<DatabaseService>("@buntime/plugin-database")` e extrai a URL de conexão automaticamente.
+
+=== resource-tenant
+
+Obtém a URL de conexão do Front Manager no K8s, via `@buntime/plugin-resource-tenant`. Indicado para ambientes multi-tenant onde cada tenant possui seu próprio banco PostgreSQL.
+
+[source,yaml]
+----
+database:
+  provider: resource-tenant
+  adapterType: postgres
+  schema: parameters
+  resourceTenant: parameters
+  migrations: server/migrations
+  seeds: server/seeds
+----
+
+Requer que `TENANT_ID` esteja definido no ambiente (ou extraído do `HOSTNAME`).
+
+== Adapters Suportados
+
+[cols="1,2,2"]
+|===
+|Adapter |Driver |Drizzle ORM
+
+|`postgres`
+|`Bun.sql` (nativo)
+|`drizzle-orm/bun-sql`
+
+|`sqlite`
+|`bun:sqlite` (nativo)
+|`drizzle-orm/bun-sqlite`
+
+|`libsql`
+|`@libsql/client`
+|`drizzle-orm/libsql`
+|===
+
+== Estrutura de Arquivos
+
+[source]
+----
+plugin-migrations/
+├── manifest.yaml          # Metadados e dependências do plugin
+├── plugin.ts              # Implementação principal (onInit)
+├── plugin.test.ts         # Testes
+├── package.json           # Dependências
+├── tsconfig.json          # Configuração TypeScript
+├── lib/
+│   ├── migrations.ts      # Executor de migrações (Drizzle ORM)
+│   ├── seeds.ts           # Executor de seeds
+│   └── types.ts           # Tipos (AppDatabaseConfig, AppInfo)
+├── scripts/
+│   └── build.ts           # Script de build
+├── examples/
+│   ├── migrations/        # Exemplos de migração SQL
+│   └── seeds/             # Exemplos de seed TypeScript
+├── docs/
+│   ├── concepts/
+│   │   └── overview.adoc  # Este arquivo
+│   └── guides/
+│       └── configuration.adoc
+└── dist/
+    └── plugin.js          # Saída compilada
+----
+
+== Seeds
+
+Scripts de seed são arquivos TypeScript/JavaScript executados após as migrações, em ordem alfabética:
+
+[source,typescript]
+----
+// seeds/01-users.ts
+export default async (db: any) => {
+  await db.run(
+    "INSERT INTO users (name, email) VALUES (?, ?)",
+    ["Admin", "admin@example.com"],
+  );
+};
+----
+
+**Convenção de nomes**: Qualquer formato de nome é aceito — os arquivos são executados em ordem alfabética. Use prefixos numéricos para controlar a ordem. Recomenda-se manter consistência na nomenclatura, como kebab-case (`01-users.ts`) ou snake_case (`01_users.ts`).
+
+**Extensões suportadas**: `.ts`, `.js`, `.mjs`, `.mts`
+
+== Hooks de Ciclo de Vida
+
+[cols="1,1,3"]
+|===
+|Hook |Utilizado |Descrição
+
+|`onInit`
+|Sim
+|Escaneia workerDirs, descobre apps com `database`, executa migrações e seeds
+
+|`onRequest`
+|Não
+|Não utilizado (sem middleware)
+
+|`onResponse`
+|Não
+|Não utilizado (sem middleware)
+
+|`onShutdown`
+|Não
+|Não utilizado (sem cleanup necessário)
+|===
+
+== Tratamento de Erros
+
+* **Pasta inexistente**: Avisa no log e pula (não falha)
+* **Erro de migração**: Loga o erro mas permite que o runtime continue
+* **Erro em seed**: Loga o erro e continua com os seeds restantes
+* **Plugin ausente**: Se o app requer um provider não carregado, pula com aviso
+
+Isso evita que falhas de migração impeçam o deploy, enquanto mantém os problemas visíveis nos logs.
+
+== Dependências
+
+[cols="1,1,3"]
+|===
+|Pacote |Tipo |Descrição
+
+|`@buntime/shared`
+|dependency
+|Tipos compartilhados do Buntime (via JSR)
+
+|`drizzle-orm`
+|dependency
+|ORM e executor de migrações
+
+|`@libsql/client`
+|dependency
+|Cliente LibSQL (para adapter `libsql`)
+
+|`@buntime/plugin-database`
+|optionalDependency
+|Provider de banco gerenciado (runtime)
+
+|`@buntime/plugin-resource-tenant`
+|optionalDependency
+|Provider de banco via Front Manager (K8s)
+|===
+
+== Integração com Outros Plugins
+
+=== plugin-database (opcional)
+
+Fornece o adapter de banco gerenciado pelo Buntime. Apps que usam `provider: plugin-database` dependem deste plugin para obter a URL de conexão.
+
+=== plugin-resource-tenant (opcional)
+
+Fornece a URL de conexão via Front Manager em ambientes K8s multi-tenant. Apps que usam `provider: resource-tenant` dependem deste plugin.
+
+== Próximos Passos
+
+* link:../guides/configuration.adoc[Configuração] — Referência completa de configuração
+* link:../guides/examples.adoc[Exemplos] — Exemplos práticos de configuração e uso

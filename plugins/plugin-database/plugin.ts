@@ -170,6 +170,7 @@ export default function databasePlugin(config: DatabasePluginConfig = {}): Plugi
 export { databasePlugin };
 export { BunSqlAdapter } from "./server/adapters/bun-sql";
 export { LibSqlAdapter } from "./server/adapters/libsql";
+export { PgliteAdapter } from "./server/adapters/pglite";
 export { DatabaseServiceImpl } from "./server/service";
 export type {
   AdapterConfig,
@@ -179,6 +180,7 @@ export type {
   DatabasePluginConfig,
   DatabaseService,
   LibSqlAdapterConfig,
+  PgliteAdapterConfig,
   Statement,
   TransactionAdapter,
 } from "./server/types";

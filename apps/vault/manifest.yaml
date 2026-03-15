@@ -1,0 +1,14 @@
+entrypoint: dist/index.js
+injectBase: true
+visibility: protected
+
+env:
+  RESOURCE_TENANT: parameters
+
+database:
+  provider: plugin-database
+  adapterType: pglite
+  schema: parameters
+  resourceTenant: parameters
+  migrations: server/migrations
+  # seeds: server/seeds  # uncomment when seeds are available

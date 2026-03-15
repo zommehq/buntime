@@ -1,0 +1,148 @@
+= Exemplos
+:toc:
+:toc-title: Sumário
+
+Exemplos práticos de configuração e uso do `@buntime/plugin-migrations`.
+
+== Arquivos de Exemplo
+
+O diretório `examples/` contém arquivos de migração e seed prontos para uso:
+
+[source]
+----
+examples/
+├── migrations/
+│   ├── 0000_init.sql          # Cria tabela users
+│   ├── 0001_add_posts.sql     # Cria tabela posts
+│   └── meta/
+│       └── _journal.json      # Metadados do Drizzle
+└── seeds/
+    ├── 01-users.ts            # Seed de usuários
+    └── 02-posts.ts            # Seed de posts
+----
+
+Para utilizar estes exemplos, declare a seção `database` no `manifest.yaml` do seu app:
+
+[source,yaml]
+----
+# manifest.yaml do app
+database:
+  provider: plugin-database
+  adapterType: sqlite
+  migrations: examples/migrations
+  seeds: examples/seeds
+----
+
+== App com plugin-database (LibSQL)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: plugin-database
+  adapterType: libsql
+  migrations: server/migrations
+----
+
+[source]
+----
+/data/apps/my-app/v1/
+├── manifest.yaml
+├── server/
+│   └── migrations/
+│       ├── 0000_init.sql
+│       ├── 0001_add_posts.sql
+│       └── meta/
+│           └── _journal.json
+└── index.ts
+----
+
+== App com plugin-database (SQLite)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: plugin-database
+  adapterType: sqlite
+  migrations: server/migrations
+  seeds: server/seeds
+----
+
+== App com resource-tenant (PostgreSQL multi-tenant)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: resource-tenant
+  adapterType: postgres
+  schema: parameters
+  resourceTenant: parameters
+  migrations: server/migrations
+  seeds: server/seeds
+----
+
+[source,bash]
+----
+# Variável de ambiente necessária
+TENANT_ID=meu-tenant
+----
+
+[source]
+----
+/data/apps/my-app/v1/
+├── manifest.yaml
+├── server/
+│   ├── migrations/
+│   │   ├── 0000_init.sql
+│   │   ├── 0001_add_posts.sql
+│   │   └── meta/
+│   │       └── _journal.json
+│   └── seeds/
+│       ├── 01-users.ts
+│       └── 02-posts.ts
+└── index.ts
+----
+
+== Gerando Novas Migrações
+
+[source,bash]
+----
+bun add -D drizzle-kit
+
+# Gerar migração a partir do schema
+bunx drizzle-kit generate
+
+# Ou criar manualmente
+cat > migrations/0002_add_comments.sql << 'EOF'
+CREATE TABLE comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER NOT NULL REFERENCES posts(id),
+  content TEXT NOT NULL
+);
+EOF
+----
+
+== Seeds
+
+Qualquer formato de nome é aceito — os arquivos são executados em ordem alfabética. Use prefixos numéricos para controlar a ordem. Recomenda-se manter consistência na nomenclatura, como kebab-case (`01-users.ts`) ou snake_case (`01_users.ts`).
+
+Cada arquivo deve exportar uma função default que recebe a instância do banco:
+
+[source,typescript]
+----
+export default async (db: any) => {
+  await db.run(
+    "INSERT INTO users (name, email) VALUES (?, ?)",
+    ["Admin", "admin@example.com"],
+  );
+};
+----
+
+**Extensões suportadas**: `.ts`, `.js`, `.mjs`, `.mts`
+
+== Próximos Passos
+
+* link:configuration.adoc[Configuração] — Referência completa de configuração
+* link:../concepts/overview.adoc[Visão Geral] — Arquitetura e conceitos

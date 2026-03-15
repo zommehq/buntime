@@ -1,0 +1,10 @@
+name: "@buntime/plugin-migrations"
+base: "/migrations"
+enabled: true
+
+pluginEntry: dist/plugin.js
+
+# Both optional - loads whichever providers apps need
+optionalDependencies:
+  - "@buntime/plugin-database"
+  - "@buntime/plugin-resource-tenant"

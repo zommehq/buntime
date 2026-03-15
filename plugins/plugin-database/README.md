@@ -24,8 +24,8 @@ The `@buntime/plugin-database` provides a unified database abstraction that othe
 
 **Key Features:**
 
-- **Multiple Adapters**: SQLite (via Bun SQL), LibSQL/Turso, PostgreSQL, MySQL
-- **Multi-Tenancy**: Per-tenant isolation via separate files (SQLite), namespaces (LibSQL), schemas (PostgreSQL), or databases (MySQL)
+- **Multiple Adapters**: SQLite (via Bun SQL), PGlite, LibSQL/Turso, PostgreSQL, MySQL
+- **Multi-Tenancy**: Per-tenant isolation via separate files (SQLite), directories (PGlite), namespaces (LibSQL), schemas (PostgreSQL), or databases (MySQL)
 - **HRANA Protocol**: WebSocket and HTTP pipeline support for LibSQL wire protocol
 - **Database Studio**: Built-in UI for browsing tables, schemas, and executing SQL
 - **Auto-Detection**: LibSQL URLs auto-detected from `DATABASE_LIBSQL_URL` environment variable
@@ -37,6 +37,7 @@ The `@buntime/plugin-database` provides a unified database abstraction that othe
 graph TD
     DS["<b>DatabaseService</b><br/><i>(exposed via provides() to plugins)</i><br/><br/>getRootAdapter(type?)<br/>getAdapter(type?, tenantId?)<br/>createTenant(id, type?)<br/>deleteTenant(id, type?)<br/>listTenants(type?)<br/>getDefaultType()<br/>getAvailableTypes()"]
     DS --> SQLite["SQLite<br/>Adapter"]
+    DS --> Pglite["PGlite<br/>Adapter"]
     DS --> LibSQL["LibSQL<br/>Adapter"]
     DS --> Postgres["Postgres<br/>Adapter"]
 ```
@@ -93,6 +94,19 @@ adapters:
 DATABASE_LIBSQL_URL=http://libsql:8080
 DATABASE_LIBSQL_REPLICAS=http://replica1:8080,http://replica2:8080
 ```
+
+### PGlite
+
+Embedded PostgreSQL-compatible adapter for local development and tests.
+
+```yaml
+adapters:
+  - type: pglite
+    baseDir: ./.cache/pglite/
+    default: true
+```
+
+**Multi-tenancy**: Creates one data directory per tenant.
 
 ### PostgreSQL
 
@@ -297,20 +311,22 @@ await adapter.execute("SELECT * FROM users");
 ## Exported Types
 
 ```typescript
-export type AdapterType = "libsql" | "mysql" | "postgres" | "sqlite";
+export type AdapterType = "libsql" | "mysql" | "pglite" | "postgres" | "sqlite";
 
 export interface DatabasePluginConfig { ... }
 export interface DatabaseService { ... }
 export interface DatabaseAdapter { ... }
 export interface TransactionAdapter { ... }
 export interface Statement { sql: string; args?: unknown[] }
-export interface AdapterConfig = BunSqlAdapterConfig | LibSqlAdapterConfig;
+export interface AdapterConfig = BunSqlAdapterConfig | LibSqlAdapterConfig | PgliteAdapterConfig;
 export interface BunSqlAdapterConfig { ... }
 export interface LibSqlAdapterConfig { ... }
+export interface PgliteAdapterConfig { ... }
 
 export class DatabaseServiceImpl { ... }
 export class BunSqlAdapter { ... }
 export class LibSqlAdapter { ... }
+export class PgliteAdapter { ... }
 ```
 
 ## File Structure

@@ -1,0 +1,439 @@
+= Configuração
+:toc:
+:toc-title: Sumário
+
+Referência completa de todas as opções de configuração do plugin-migrations.
+
+== Métodos de Configuração
+
+=== 1. manifest.yaml do Plugin
+
+Configuração estática do plugin:
+
+[source,yaml]
+----
+# plugins/plugin-migrations/manifest.yaml
+name: "@buntime/plugin-migrations"
+base: "/migrations"
+enabled: true
+
+pluginEntry: dist/plugin.js
+
+optionalDependencies:
+  - "@buntime/plugin-database"
+  - "@buntime/plugin-resource-tenant"
+----
+
+=== 2. manifest.yaml do App
+
+Cada app declara sua configuração de banco no próprio `manifest.yaml`:
+
+[source,yaml]
+----
+# manifest.yaml do app
+database:
+  provider: plugin-database       # ou "resource-tenant"
+  adapterType: postgres           # postgres | sqlite | libsql
+  schema: public                  # schema do banco (PostgreSQL)
+  migrations: server/migrations   # pasta com arquivos Drizzle
+  seeds: server/seeds             # pasta com seeds (opcional)
+  resourceTenant: parameters      # nome do recurso (apenas resource-tenant)
+----
+
+=== 3. Variáveis de Ambiente
+
+Configuração via variáveis de ambiente no runtime:
+
+[source,bash]
+----
+# ID do tenant (obrigatório para resource-tenant)
+TENANT_ID=meu-tenant
+
+# Diretórios de workers escaneados
+RUNTIME_WORKER_DIRS=/data/.apps:/data/apps
+----
+
+== Opções de Configuração do App
+
+=== provider
+
+Provider de conexão ao banco de dados.
+
+* **Tipo:** `string`
+* **Padrão:** `"plugin-database"`
+* **Valores:** `"plugin-database"` | `"resource-tenant"`
+
+[source,yaml]
+----
+database:
+  provider: plugin-database
+----
+
+**`plugin-database`**: Usa o serviço de banco gerenciado pelo Buntime. Obtém o adapter via `ctx.getPlugin("@buntime/plugin-database")`.
+
+**`resource-tenant`**: Obtém a URL de conexão do Front Manager via `ctx.getPlugin("@buntime/plugin-resource-tenant")`. Requer `TENANT_ID` e `resourceTenant`.
+
+=== adapterType
+
+Tipo de adapter/driver de banco de dados.
+
+* **Tipo:** `string`
+* **Padrão:** adapter padrão do provider
+* **Valores:** `"postgres"` | `"sqlite"` | `"libsql"`
+
+[source,yaml]
+----
+database:
+  adapterType: postgres
+----
+
+[cols="1,2,2"]
+|===
+|Valor |Driver |Drizzle ORM
+
+|`postgres`
+|`Bun.sql` (nativo)
+|`drizzle-orm/bun-sql`
+
+|`sqlite`
+|`bun:sqlite` (nativo)
+|`drizzle-orm/bun-sqlite`
+
+|`libsql`
+|`@libsql/client`
+|`drizzle-orm/libsql`
+|===
+
+=== schema
+
+Schema do banco de dados (PostgreSQL).
+
+* **Tipo:** `string`
+* **Padrão:** `"public"`
+
+[source,yaml]
+----
+database:
+  schema: parameters
+----
+
+NOTE: Quando `schema` é `"public"`, o parâmetro `migrationsSchema` é passado como `undefined` ao Drizzle ORM (comportamento padrão do PostgreSQL).
+
+=== migrations
+
+Caminho relativo para a pasta com arquivos de migração Drizzle.
+
+* **Tipo:** `string`
+* **Padrão:** `"migrations"`
+
+[source,yaml]
+----
+database:
+  migrations: server/migrations
+----
+
+A pasta deve conter:
+
+* Arquivos `.sql` de migração (gerados pelo `drizzle-kit generate`)
+* Subpasta `meta/` com `_journal.json` (metadados do Drizzle)
+
+=== seeds
+
+Caminho relativo para a pasta com scripts de seed.
+
+* **Tipo:** `string`
+* **Padrão:** _nenhum_ (seeds desativados)
+
+[source,yaml]
+----
+database:
+  seeds: server/seeds
+----
+
+Scripts de seed são executados em ordem alfabética após as migrações. Cada arquivo deve exportar uma função default:
+
+[source,typescript]
+----
+export default async (db: any) => {
+  await db.run(
+    "INSERT INTO users (name, email) VALUES (?, ?)",
+    ["Admin", "admin@example.com"],
+  );
+};
+----
+
+**Extensões suportadas**: `.ts`, `.js`, `.mjs`, `.mts`
+
+**Convenção de nomes**: Qualquer formato de nome é aceito — os arquivos são executados em ordem alfabética. Use prefixos numéricos para controlar a ordem. Recomenda-se manter consistência na nomenclatura, como kebab-case (`01-users.ts`) ou snake_case (`01_users.ts`).
+
+=== resourceTenant
+
+Nome do recurso no Front Manager (apenas provider `resource-tenant`).
+
+* **Tipo:** `string`
+* **Padrão:** _nenhum_
+
+[source,yaml]
+----
+database:
+  provider: resource-tenant
+  resourceTenant: parameters
+----
+
+Este campo é **obrigatório** quando `provider: resource-tenant`. Identifica qual recurso de banco consultar no Front Manager.
+
+== Tabela Resumo
+
+[cols="1,1,1,3"]
+|===
+|Opção |Tipo |Padrão |Descrição
+
+|`provider`
+|`string`
+|`plugin-database`
+|Provider de conexão: `plugin-database` ou `resource-tenant`
+
+|`adapterType`
+|`string`
+|adapter padrão
+|Tipo de adapter: `postgres`, `sqlite`, `libsql`
+
+|`schema`
+|`string`
+|`public`
+|Schema do banco (PostgreSQL)
+
+|`migrations`
+|`string`
+|`migrations`
+|Pasta com arquivos de migração Drizzle
+
+|`seeds`
+|`string`
+|_nenhum_
+|Pasta com scripts de seed (opcional)
+
+|`resourceTenant`
+|`string`
+|_nenhum_
+|Nome do recurso no Front Manager (apenas provider `resource-tenant`)
+|===
+
+== Variáveis de Ambiente
+
+[cols="1,1,1,3"]
+|===
+|Variável |Tipo |Padrão |Descrição
+
+|`TENANT_ID`
+|`string`
+|Extraído do `HOSTNAME`
+|ID do tenant para migrações isoladas
+
+|`RUNTIME_WORKER_DIRS`
+|`string`
+|`/data/.apps:/data/apps`
+|Diretórios de workers escaneados pelo plugin (separados por `:`)
+|===
+
+=== TENANT_ID
+
+Identificador do tenant para migrações isoladas.
+
+[source,bash]
+----
+# Definir explicitamente
+TENANT_ID=meu-tenant
+
+# Ou extraído automaticamente do HOSTNAME
+HOSTNAME=meu-tenant.cluster.local
+# → TENANT_ID = "meu-tenant"
+----
+
+**Extração automática**: Se `TENANT_ID` não estiver definido, o plugin tenta extrair do `HOSTNAME` usando o padrão `^([^.]+)\.` (tudo antes do primeiro ponto).
+
+**Obrigatório para**: Provider `resource-tenant`. Apps com `plugin-database` também usam opcionalmente para obter adapter por tenant.
+
+=== RUNTIME_WORKER_DIRS
+
+Diretórios que o plugin escaneia em busca de apps com configuração `database`.
+
+[source,bash]
+----
+# Um diretório
+RUNTIME_WORKER_DIRS=/data/apps
+
+# Múltiplos diretórios (separados por :)
+RUNTIME_WORKER_DIRS=/data/.apps:/data/apps
+
+# Core + externo
+RUNTIME_WORKER_DIRS=/data/.apps:/data/apps:/data/staging
+----
+
+NOTE: Usa separador `:` (estilo PATH), não `,`.
+
+== Exemplos Completos
+
+=== App com plugin-database (LibSQL)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: plugin-database
+  adapterType: libsql
+  migrations: server/migrations
+----
+
+[source]
+----
+/data/apps/my-app/v1/
+├── manifest.yaml
+├── server/
+│   └── migrations/
+│       ├── 0000_init.sql
+│       ├── 0001_add_posts.sql
+│       └── meta/
+│           └── _journal.json
+└── index.ts
+----
+
+=== App com plugin-database (SQLite)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: plugin-database
+  adapterType: sqlite
+  migrations: server/migrations
+  seeds: server/seeds
+----
+
+=== App com resource-tenant (PostgreSQL multi-tenant)
+
+[source,yaml]
+----
+# /data/apps/my-app/v1/manifest.yaml
+database:
+  provider: resource-tenant
+  adapterType: postgres
+  schema: parameters
+  resourceTenant: parameters
+  migrations: server/migrations
+  seeds: server/seeds
+----
+
+[source,bash]
+----
+# Variável de ambiente necessária
+TENANT_ID=meu-tenant
+----
+
+[source]
+----
+/data/apps/my-app/v1/
+├── manifest.yaml
+├── server/
+│   ├── migrations/
+│   │   ├── 0000_init.sql
+│   │   ├── 0001_add_posts.sql
+│   │   └── meta/
+│   │       └── _journal.json
+│   └── seeds/
+│       ├── 01-users.ts
+│       └── 02-posts.ts
+└── index.ts
+----
+
+=== Kubernetes com múltiplos diretórios
+
+[source,bash]
+----
+# ConfigMap
+RUNTIME_WORKER_DIRS=/data/.apps:/data/apps
+TENANT_ID=producao
+----
+
+O diretório `/data/.apps` contém apps core (built into image), enquanto `/data/apps` contém apps externos (PVC). Ambos são escaneados pelo plugin.
+
+== Gerando Migrações
+
+Para gerar migrações usando Drizzle Kit:
+
+[source,bash]
+----
+bun add -D drizzle-kit
+
+# Gerar migração a partir do schema
+bunx drizzle-kit generate
+
+# Ou criar manualmente
+cat > migrations/0002_add_comments.sql << 'EOF'
+CREATE TABLE comments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  post_id INTEGER NOT NULL REFERENCES posts(id),
+  content TEXT NOT NULL
+);
+EOF
+----
+
+== Troubleshooting
+
+=== Migrações não executam
+
+[source,bash]
+----
+# Verificar logs
+kubectl logs deployment/buntime | grep migrations
+
+# Verificar se o app tem seção database no manifest
+cat /data/apps/my-app/v1/manifest.yaml
+----
+
+=== Tenant não encontrado
+
+Verifique se `TENANT_ID` está definido ou se o `HOSTNAME` segue o padrão `{tenant}.domain`:
+
+[source,bash]
+----
+TENANT_ID=meu-tenant
+# ou
+HOSTNAME=meu-tenant.cluster.local
+----
+
+=== Seeds não executam
+
+1. Verifique se a pasta `seeds` está declarada no `manifest.yaml`
+2. Verifique se os arquivos têm extensão `.ts`, `.js`, `.mjs` ou `.mts`
+3. Verifique se os arquivos exportam uma função default
+
+=== Pasta de migrações não encontrada
+
+O plugin pula apps cuja pasta de migrações não existe. Verifique:
+
+[source,bash]
+----
+# O caminho é relativo ao diretório do app
+ls /data/apps/my-app/v1/server/migrations/
+
+# Deve conter arquivos .sql e meta/_journal.json
+ls /data/apps/my-app/v1/server/migrations/meta/
+----
+
+=== Provider não carregado
+
+Se um app requer `plugin-database` ou `plugin-resource-tenant` mas o plugin correspondente não está carregado, a migração é ignorada com aviso no log.
+
+Verifique se o provider está habilitado:
+
+[source,bash]
+----
+# Verificar plugins carregados
+curl http://localhost:8000/api/plugins
+----
+
+== Próximos Passos
+
+* link:../concepts/overview.adoc[Visão Geral] — Arquitetura e conceitos
+* link:examples.adoc[Exemplos] — Exemplos práticos de configuração e uso

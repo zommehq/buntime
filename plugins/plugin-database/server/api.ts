@@ -113,7 +113,7 @@ export const api = new Hono()
           "SELECT name, type FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%' ORDER BY name",
         );
         tables = result;
-      } else if (resolvedType === "postgres") {
+      } else if (resolvedType === "postgres" || resolvedType === "pglite") {
         const result = await adapter.execute<{ name: string; type: string }>(
           "SELECT table_name as name, table_type as type FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name",
         );
@@ -161,7 +161,7 @@ export const api = new Hono()
           pk: col.pk === 1,
           type: col.type,
         }));
-      } else if (resolvedType === "postgres") {
+      } else if (resolvedType === "postgres" || resolvedType === "pglite") {
         const result = await adapter.execute<{
           column_name: string;
           data_type: string;

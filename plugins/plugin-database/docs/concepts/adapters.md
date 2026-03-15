@@ -26,12 +26,13 @@ interface DatabaseAdapter {
 
 ## Adapter Classes
 
-There are two implementation classes:
+There are three implementation classes:
 
 | Class | Adapter Types | Driver |
 |-------|--------------|--------|
 | `BunSqlAdapter` | `sqlite`, `postgres`, `mysql` | Bun's native `SQL` API |
 | `LibSqlAdapter` | `libsql` | `@libsql/client/http` |
+| `PgliteAdapter` | `pglite` | `@electric-sql/pglite` |
 
 ---
 

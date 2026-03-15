@@ -322,7 +322,7 @@ export interface HranaPipelineRespBody {
  * Headers used for HRANA requests
  */
 export const HranaHeaders = {
-  /** Adapter type to use (libsql, sqlite, postgres, mysql) */
+  /** Adapter type to use (libsql, sqlite, pglite, postgres, mysql) */
   ADAPTER: "x-database-adapter",
   /** Namespace/tenant ID */
   NAMESPACE: "x-database-namespace",
