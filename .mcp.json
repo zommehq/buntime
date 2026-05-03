@@ -1,8 +1,10 @@
 {
   "mcpServers": {
     "qmd": {
-      "command": "qmd",
-      "args": ["--index", "buntime", "mcp"]
+      "command": "/Users/djalmajr/.local/share/essential-skills/qmd/wrappers/buntime-qmd",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }
