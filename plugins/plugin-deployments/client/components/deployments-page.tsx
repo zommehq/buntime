@@ -2,11 +2,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { apiRequest, uploadFiles } from "~/utils/api";
+import { apiRequest, downloadBlob, getBatchDownloadUrl, getDownloadUrl, uploadFiles } from "~/utils/api";
 import { cn } from "~/utils/cn";
 import { isValidUploadDestination, parseDeploymentPath } from "~/utils/path-utils";
 import { useFragmentUrl } from "~/utils/use-fragment-url";
-import manifest from "../../manifest.yaml";
 import { FileRow } from "./file-row";
 import { MoveDialog } from "./move-dialog";
 import { NewFolderDialog } from "./new-folder-dialog";
@@ -184,8 +183,13 @@ export function DeploymentsPage() {
     }
   };
 
-  const handleDownload = (entry: FileEntry) => {
-    window.open(`${manifest.base}/api/download?path=${encodeURIComponent(entry.path)}`, "_blank");
+  const handleDownload = async (entry: FileEntry) => {
+    const filename = entry.isDirectory ? `${entry.name}.zip` : entry.name;
+    try {
+      await downloadBlob(getDownloadUrl(entry.path), filename);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("errors.downloadFailed"));
+    }
   };
 
   const handleMove = async (destPath: string) => {
@@ -266,12 +270,13 @@ export function DeploymentsPage() {
     }
   };
 
-  const handleBatchDownload = () => {
+  const handleBatchDownload = async () => {
     if (selectedPaths.size === 0) return;
-    const paths = Array.from(selectedPaths)
-      .map((p) => encodeURIComponent(p))
-      .join(",");
-    window.open(`${manifest.base}/api/download-batch?paths=${paths}`, "_blank");
+    try {
+      await downloadBlob(getBatchDownloadUrl(Array.from(selectedPaths)), `download-${Date.now()}.zip`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("errors.downloadFailed"));
+    }
   };
 
   const handleBatchMove = async (destPath: string) => {

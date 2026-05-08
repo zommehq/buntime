@@ -39,6 +39,7 @@
     "moveFailed": "Failed to move item",
     "refreshFailed": "Failed to refresh",
     "renameFailed": "Failed to rename item",
+    "downloadFailed": "Failed to download file",
     "uploadFailed": "Failed to upload files"
   },
   "list": {
