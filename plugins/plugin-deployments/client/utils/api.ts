@@ -79,3 +79,27 @@ export function getBatchDownloadUrl(paths: string[]): string {
   const pathsParam = paths.map((p) => encodeURIComponent(p)).join(",");
   return `${BASE}/api/download-batch?paths=${pathsParam}`;
 }
+
+/**
+ * Trigger a file download using fetch + Blob.
+ *
+ * Using window.open() for downloads fails in environments with an AppShell
+ * because the navigation request gets intercepted before reaching the handler.
+ * fetch() bypasses that interception entirely.
+ */
+export async function downloadBlob(url: string, filename: string): Promise<void> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const json = await res.json().catch(() => ({}));
+    throw new Error((json as { message?: string }).message || res.statusText);
+  }
+  const blob = await res.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(blobUrl);
+}
